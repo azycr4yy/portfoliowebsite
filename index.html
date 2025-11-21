@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDAYAN J // NEURAL ARCHITECT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Distinctive Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #030303;
+            --text-primary: #e0e0e0;
+            --accent-color: #ccff00; /* Lando Neon */
+            --accent-secondary: #4a4a4a;
+        }
+
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+            cursor: none; 
+        }
+
+        h1, h2, h3, .display-font {
+            font-family: 'Syne', sans-serif;
+        }
+
+        .italic-force {
+            font-style: italic;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0; 
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-secondary);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        .glass-panel {
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Carousel Styles */
+        .perspective-container {
+            perspective: 1000px;
+            overflow: hidden;
+        }
+        
+        #carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.1s; /* Smooth drag */
+        }
+
+        .carousel-item {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px; /* Card Width */
+            height: 400px; /* Card Height */
+            margin-top: -200px; /* Half height */
+            margin-left: -150px; /* Half width */
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .project-card-3d {
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 5, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+            transition: border-color 0.3s;
+        }
+
+        .project-card-3d:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 30px rgba(204, 255, 0, 0.1);
+        }
+
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--accent-color);
+            transition: width 0.2s, height 0.2s;
+        }
+        
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .text-outline {
+            -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div id="canvas-container"></div>
+    
+    <div class="noise-overlay"></div>
+
+    <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-50 mix-blend-difference">
+        <div class="text-xl font-bold italic tracking-tighter text-[var(--accent-color)]">UDAYAN.J</div>
+        <div class="hidden md:flex space-x-8 text-xs font-bold tracking-widest">
+            <a href="#work" class="hover:text-[var(--accent-color)] transition-colors">PROJECTS</a>
+            <a href="#about" class="hover:text-[var(--accent-color)] transition-colors">STACK</a>
+            <a href="#contact" class="hover:text-[var(--accent-color)] transition-colors">CONNECT</a>
+        </div>
+    </nav>
+
+    <main class="relative z-10">
+        
+        <!-- Hero Section -->
+        <section class="min-h-screen flex flex-col justify-center px-6 md:px-20 relative">
+            <div class="hero-content w-full">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="h-[1px] w-12 bg-[var(--accent-color)]"></div>
+                    <p class="reveal-text text-xs font-bold text-[var(--accent-color)] tracking-[0.3em]">LLM OPS // VECTOR DB // RAG</p>
+                </div>
+                
+                <h1 class="reveal-text text-[12vw] leading-[0.8] font-extrabold tracking-tighter display-font mix-blend-lighten uppercase">
+                    UDAYAN<span class="text-[var(--accent-color)]">.</span><br>
+                    <span class="text-outline italic">JOSHI</span>
+                </h1>
+                
+                <div class="mt-8 flex flex-col md:flex-row justify-between items-end">
+                    <div class="reveal-text max-w-xl text-lg md:text-xl text-gray-300 font-light leading-relaxed">
+                        <span class="text-[var(--accent-color)] font-bold">></span> Neural Architect & Developer.<br>
+                        Architecting high-scale <span class="text-white font-bold italic">RAG Systems</span> and orchestrating <span class="text-white font-bold italic">LLM Agents</span>. Optimizing semantic retrieval and inference pipelines for enterprise intelligence.
+                    </div>
+                    
+                    <div class="hidden md:block text-right">
+                        <div class="text-xs text-gray-500 mb-2">AVAILABLE FOR HIRE</div>
+                        <div class="text-4xl font-bold text-[var(--accent-color)] animate-pulse">● ONLINE</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section id="about" class="py-24 px-6 md:px-20 border-t border-gray-900">
+            <div class="mb-12 flex items-end gap-4">
+                <h2 class="text-4xl md:text-6xl font-bold display-font uppercase">Tech_Arsenal</h2>
+                <span class="text-[var(--accent-color)] text-xl mb-2 font-mono">v2.4</span>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
+                    <div class="text-2xl font-bold mb-2">DL/ML</div>
+                    <div class="text-xs opacity-60 group-hover:opacity-100">PyTorch, TensorFlow, Keras</div>
+                </div>
+                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
+                    <div class="text-2xl font-bold mb-2">Vision</div>
+                    <div class="text-xs opacity-60 group-hover:opacity-100">YOLO, OpenCV, GANs</div>
+                </div>
+                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
+                    <div class="text-2xl font-bold mb-2">LLMs</div>
+                    <div class="text-xs opacity-60 group-hover:opacity-100">LangChain, LlamaIndex, HuggingFace</div>
+                </div>
+                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
+                    <div class="text-2xl font-bold mb-2">Backend</div>
+                    <div class="text-xs opacity-60 group-hover:opacity-100">FastAPI, Docker, Pinecone</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3D Carousel Projects -->
+        <section id="work" class="h-screen w-full relative overflow-hidden flex flex-col justify-center border-t border-gray-900">
+            
+            <!-- Header for Section -->
+            <div class="absolute top-12 left-6 md:left-20 z-20">
+                <h2 class="text-5xl md:text-7xl font-bold display-font tracking-tighter italic mix-blend-difference">DEPLOYMENTS</h2>
+                <div class="text-xs font-mono text-[var(--accent-color)] mt-2 animate-pulse">
+                    &larr; DRAG TO ROTATE &rarr;
+                </div>
+            </div>
+
+            <!-- 3D Scene -->
+            <div class="perspective-container w-full h-[600px] relative cursor-grab active:cursor-grabbing" id="carousel-container">
+                <div id="carousel">
+                    
+                    <!-- Item 1 -->
+                    <div class="carousel-item">
+                        <a href="https://github.com/azycr4yy/DDPM" target="_blank" class="project-card-3d group">
+                            <div>
+                                <div class="flex justify-between">
+                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">01 // GEN_AI</div>
+                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
+                                </div>
+                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">Emoji Diffusion</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Custom DDPM implementation in PyTorch. U-Net architecture with attention gates trained on Subinium dataset.
+                                </p>
+                            </div>
+                            <div class="flex gap-1 flex-wrap">
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">PyTorch</span>
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">Diffusion</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="carousel-item">
+                        <a href="https://github.com/azycr4yy/FAQcustomer" target="_blank" class="project-card-3d group">
+                            <div>
+                                <div class="flex justify-between">
+                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">02 // RAG_OPS</div>
+                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
+                                </div>
+                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">FAQ RAG Bot</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Enterprise support agent. Semantic search via Vector DBs + LLM orchestration to minimize hallucinations.
+                                </p>
+                            </div>
+                            <div class="flex gap-1 flex-wrap">
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">LangChain</span>
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">Pinecone</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Item 3 (Added for Circle Effect) -->
+                    <div class="carousel-item">
+                        <div class="project-card-3d group">
+                            <div>
+                                <div class="flex justify-between">
+                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">03 // NLP_CORE</div>
+                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
+                                </div>
+                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">Sentiment Pulse</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Real-time financial market sentiment analyzer processing 50k+ data points/sec using distilled BERT models.
+                                </p>
+                            </div>
+                            <div class="flex gap-1 flex-wrap">
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">BERT</span>
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">Kafka</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 (Added for Circle Effect) -->
+                    <div class="carousel-item">
+                        <div class="project-card-3d group">
+                            <div>
+                                <div class="flex justify-between">
+                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">04 // VISION</div>
+                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
+                                </div>
+                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">Neural Style</h3>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    High-resolution style transfer pipeline optimizing perceptual loss functions. Renders 4k outputs in < 2s.
+                                </p>
+                            </div>
+                            <div class="flex gap-1 flex-wrap">
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">PyTorch</span>
+                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">CUDA</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 5: GitHub -->
+                    <div class="carousel-item">
+                        <a href="https://github.com/azycr4yy/" target="_blank" class="project-card-3d group border-dashed flex items-center justify-center text-center">
+                            <div>
+                                <div class="text-6xl text-[var(--accent-color)] mb-4">+</div>
+                                <h3 class="text-xl font-bold mb-2 text-white">GITHUB</h3>
+                                <p class="text-xs text-gray-500">Explore full repository</p>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <section id="contact" class="border-t border-gray-900 bg-[#050505]">
+            <div class="px-6 md:px-20 py-20">
+                <!-- Changed md:grid-cols-2 to lg:grid-cols-2 to prevent overlap on tablets -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div>
+                        <!-- Adjusted font sizing for better scaling -->
+                        <h2 class="text-5xl md:text-6xl lg:text-7xl display-font font-bold mb-8 italic relative z-10">READY TO<br>DEPLOY?</h2>
+                        <a href="mailto:hello@example.com" class="text-xl hover:text-[var(--accent-color)] transition-colors relative z-10">
+                            &rarr; Contact Me
+                        </a>
+                    </div>
+                    <div class="flex flex-col justify-end space-y-6 relative z-20">
+                        <a href="https://in.linkedin.com/in/udayan-j-4034b0368" target="_blank" class="flex items-center justify-between border-b border-gray-800 pb-4 hover:border-[var(--accent-color)] group bg-[#050505]">
+                            <span class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors">LINKEDIN</span>
+                            <span class="text-gray-500 group-hover:translate-x-2 transition-transform">↗</span>
+                        </a>
+                        <a href="https://github.com/azycr4yy/" target="_blank" class="flex items-center justify-between border-b border-gray-800 pb-4 hover:border-[var(--accent-color)] group bg-[#050505]">
+                            <span class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors">GITHUB</span>
+                            <span class="text-gray-500 group-hover:translate-x-2 transition-transform">↗</span>
+                        </a>
+                        <a href="https://instagram.com/uday4n" target="_blank" class="flex items-center justify-between border-b border-gray-800 pb-4 hover:border-[var(--accent-color)] group bg-[#050505]">
+                            <span class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors">INSTAGRAM</span>
+                            <span class="text-gray-500 group-hover:translate-x-2 transition-transform">↗</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-20 flex justify-between items-end text-xs text-gray-600 font-mono">
+                    <div>UDAYAN J // 2024</div>
+                    <div class="text-right">SYSTEM STATUS: ONLINE<br>LOCATION: LATENT SPACE</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Shaders (Fixed Noise Function) -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+        varying vec2 vUv;
+        varying float vDistortion;
+        uniform float uTime;
+        uniform vec2 uMouse;
+
+        // Robust Simplex Noise Implementation (Ashima Arts)
+        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+        
+        float snoise(vec2 v) {
+            const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
+                                0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
+                                -0.577350269189626,  // -1.0 + 2.0 * C.x
+                                0.024390243902439); // 1.0 / 41.0
+            // First corner
+            vec2 i  = floor(v + dot(v, C.yy) );
+            vec2 x0 = v - i + dot(i, C.xx);
+
+            // Other corners
+            vec2 i1;
+            i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+            vec4 x12 = x0.xyxy + C.xxzz;
+            x12.xy -= i1;
+
+            // Permutations
+            i = mod289(i); 
+            vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+                + i.x + vec3(0.0, i1.x, 1.0 ));
+
+            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+            m = m*m ;
+            m = m*m ;
+
+            // Gradients
+            vec3 x = 2.0 * fract(p * C.www) - 1.0;
+            vec3 h = abs(x) - 0.5;
+            vec3 ox = floor(x + 0.5);
+            vec3 a0 = x - ox;
+
+            m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+
+            vec3 g;
+            g.x  = a0.x  * x0.x  + h.x  * x0.y;
+            g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+            return 130.0 * dot(m, g);
+        }
+
+        void main() {
+            vUv = uv;
+            
+            // Interaction Logic
+            float dist = distance(uv, uMouse);
+            float mouseEffect = smoothstep(0.5, 0.0, dist) * 0.5;
+            
+            // Slower, deeper noise for the "breathing" effect
+            float noiseVal = snoise(vec2(position.x * 0.3 + uTime * 0.1, position.y * 0.3 + uTime * 0.05));
+            
+            vec3 pos = position;
+            // Deform mesh based on noise and mouse
+            pos.z += noiseVal * (2.5 + mouseEffect * 6.0); 
+            
+            vDistortion = noiseVal;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+        }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        varying vec2 vUv;
+        varying float vDistortion;
+        uniform float uTime;
+        uniform vec2 uResolution;
+
+        void main() {
+            // Dithering Logic
+            vec2 grid = gl_FragCoord.xy / 4.0; 
+            vec2 gridPos = fract(grid);
+            
+            // Bayer Matrix 2x2 for dithering
+            float dither = 0.0;
+            if (gridPos.x > 0.5) {
+                if (gridPos.y > 0.5) dither = 0.0;
+                else dither = 0.75;
+            } else {
+                if (gridPos.y > 0.5) dither = 0.50;
+                else dither = 0.25;
+            }
+
+            // Color Palette: Deep Void to Lando Neon
+            vec3 color1 = vec3(0.02, 0.02, 0.02); // Black
+            vec3 color2 = vec3(0.8, 1.0, 0.0);    // Acid Lime (Accent)
+            vec3 color3 = vec3(0.1, 0.15, 0.1);   // Dark Green/Greyish
+
+            // Mix based on distortion calculated in vertex
+            float intensity = vDistortion * 0.5 + 0.5;
+            intensity += dither * 0.15; // Apply dither noise
+
+            vec3 finalColor = mix(color1, color3, intensity);
+            
+            // Add scanline effect
+            float scanline = sin(vUv.y * 200.0 + uTime * 5.0) * 0.02;
+            finalColor += scanline;
+
+            // Highlight edges/peaks with Neon
+            if(intensity > 0.75) {
+                finalColor = mix(finalColor, color2, (intensity - 0.75) * 2.0);
+            }
+
+            gl_FragColor = vec4(finalColor, 1.0);
+        }
+    </script>
+
+    <script>
+        // --- Three.js Setup ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // --- Geometry & Material ---
+        const geometry = new THREE.IcosahedronGeometry(4, 60);
+        
+        const material = new THREE.ShaderMaterial({
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: document.getElementById('fragmentShader').textContent,
+            uniforms: {
+                uTime: { value: 0 },
+                uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                uMouse: { value: new THREE.Vector2(0.5, 0.5) }
+            },
+            wireframe: true,
+            side: THREE.DoubleSide
+        });
+
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        camera.position.z = 6;
+
+        // --- Interaction ---
+        let mouse = { x: 0.5, y: 0.5 };
+        let targetMouse = { x: 0.5, y: 0.5 };
+
+        window.addEventListener('mousemove', (e) => {
+            targetMouse.x = e.clientX / window.innerWidth;
+            targetMouse.y = 1.0 - (e.clientY / window.innerHeight);
+
+            gsap.to(".cursor-dot", {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.1
+            });
+            gsap.to(".cursor-outline", {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+        });
+
+        // --- Animation Loop ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const elapsedTime = clock.getElapsedTime();
+            material.uniforms.uTime.value = elapsedTime;
+
+            mouse.x += (targetMouse.x - mouse.x) * 0.05;
+            mouse.y += (targetMouse.y - mouse.y) * 0.05;
+            material.uniforms.uMouse.value.set(mouse.x, mouse.y);
+
+            sphere.rotation.y = elapsedTime * 0.05;
+            sphere.rotation.x = Math.sin(elapsedTime * 0.1) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // --- Resize Handler ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+        });
+
+        // --- GSAP Intro ---
+        gsap.registerPlugin(ScrollTrigger);
+        const tl = gsap.timeline();
+
+        tl.to("#canvas-container", { opacity: 1, duration: 2 })
+          .from(".reveal-text", {
+              y: 50,
+              opacity: 0,
+              duration: 1,
+              stagger: 0.1,
+              ease: "power3.out"
+          }, "-=1.5");
+        
+        // --- 3D Carousel Logic ---
+        const carousel = document.querySelector('#carousel');
+        const carouselContainer = document.querySelector('#carousel-container');
+        
+        let currentAngle = 0;
+        let targetAngle = 0;
+        let isDragging = false;
+        let startX = 0;
+        let lastX = 0;
+
+        // 1. Position Items in a Circle dynamically
+        const updateLayout = () => {
+            const items = document.querySelectorAll('.carousel-item');
+            const totalItems = items.length;
+            const angleStep = 360 / totalItems;
+            
+            // Calculate optimal radius based on card width (300px) to avoid overlap
+            // Radius = (Width / 2) / tan(PI / Count) + padding
+            const cardWidth = 300;
+            let radius = Math.round( (cardWidth + 40) / (2 * Math.tan(Math.PI / totalItems)) );
+            
+            // Clamp minimum radius so it doesn't look too cramped with few items
+            if (window.innerWidth < 768) {
+                 radius = Math.max(radius, 280);
+            } else {
+                 radius = Math.max(radius, 450);
+            }
+
+            items.forEach((item, index) => {
+                const angle = index * angleStep;
+                // Rotate item to face center, then push it out by radius
+                item.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+            });
+        };
+
+        // Initial layout update
+        updateLayout();
+        window.addEventListener('resize', updateLayout);
+
+        // 2. Animation Loop for Smooth Rotation
+        function animateCarousel() {
+            // Linear interpolation for smoothness
+            currentAngle += (targetAngle - currentAngle) * 0.05;
+            
+            // Rotate the entire carousel container
+            if(carousel) {
+                carousel.style.transform = `rotateY(${-currentAngle}deg)`;
+            }
+            
+            requestAnimationFrame(animateCarousel);
+        };
+        animateCarousel();
+
+        // 3. Interaction
+        if(carouselContainer) {
+            carouselContainer.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                lastX = e.clientX;
+                carouselContainer.classList.add('cursor-grabbing');
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.clientX - lastX;
+                lastX = e.clientX;
+                targetAngle -= deltaX * 0.5; 
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                if(carouselContainer) carouselContainer.classList.remove('cursor-grabbing');
+            });
+            
+            // Touch
+            carouselContainer.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                lastX = e.touches[0].clientX;
+            });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.touches[0].clientX - lastX;
+                lastX = e.touches[0].clientX;
+                targetAngle -= deltaX * 0.8; 
+            });
+
+            window.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
+
+    </script>
+</body>
+</html>
