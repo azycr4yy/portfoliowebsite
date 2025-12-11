@@ -402,7 +402,7 @@
 <script>
 async function updateSpotifyWidget() {
     try {
-        const res = await fetch("http://127.0.0.1:5000/api/now-playing");
+        const res = await fetch("https://portfoliowebsite-3od8.onrender.com/now-playing");
         const data = await res.json();
 
         console.log("API DATA:", data);
