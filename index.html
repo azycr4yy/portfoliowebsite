@@ -3,481 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UDAYAN J // NEURAL ARCHITECT</title>
+    <title>UDAYAN J. | RETRO MAGAZINE PORTFOLIO</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Press+Start+2P&family=Righteous&family=VT323&display=swap" rel="stylesheet">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-
     <style>
+        /* --- RETRO AESTHETICS & UTILS --- */
         :root {
-            --bg-color: #030303;
-            --text-primary: #e0e0e0;
-            --accent-color: #ccff00; /* Lando Neon */
-            --accent-secondary: #4a4a4a;
+            --neon-yellow: #FFFF00;
+            --neon-green: #39FF14;
+            --neon-cyan: #00FFFF;
+            --neon-pink: #FF00FF;
+            --retro-bg: #f0f0f0;
+            --ink-black: #1a1a1a;
         }
 
         body {
-            margin: 0;
+            background-color: #222;
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            font-family: 'Righteous', sans-serif;
             overflow-x: hidden;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: 'Space Mono', monospace;
-            cursor: none; 
         }
 
-        h1, h2, h3, .display-font {
-            font-family: 'Syne', sans-serif;
-        }
-
-        .italic-force { font-style: italic; }
-
-        #canvas-container {
+        .paper-texture {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100vh;
-            z-index: -1;
-            opacity: 0; 
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: var(--accent-secondary); }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
-
-        .glass-panel {
-            background: rgba(15, 15, 15, 0.7);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Carousel Styles */
-        .perspective-container {
-            perspective: 1000px;
-            overflow: hidden;
-        }
-        
-        #carousel {
-            position: relative;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            transform-style: preserve-3d;
-            transition: transform 0.1s; /* Smooth drag */
-        }
-
-        .carousel-item {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 300px; height: 400px;
-            margin-top: -200px; margin-left: -150px; /* Centering */
-            backface-visibility: hidden; 
-            -webkit-backface-visibility: hidden;
-            transition: opacity 0.3s;
-        }
-
-        .project-card-3d {
-            width: 100%; height: 100%;
-            background: rgba(5, 5, 5, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; flex-direction: column;
-            justify-content: space-between;
-            padding: 2rem;
-            transition: border-color 0.3s;
-        }
-
-        .project-card-3d:hover {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 30px rgba(204, 255, 0, 0.1);
-        }
-
-        .cursor-dot, .cursor-outline {
-            position: fixed; top: 0; left: 0;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            z-index: 9999;
             pointer-events: none;
-        }
-        .cursor-dot { width: 8px; height: 8px; background-color: var(--accent-color); }
-        .cursor-outline {
-            width: 40px; height: 40px;
-            border: 1px solid var(--accent-color);
-            transition: width 0.2s, height 0.2s;
-        }
-        
-        .noise-overlay {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9998; opacity: 0.04;
+            z-index: 50;
+            opacity: 0.08;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        .text-outline {
-            -webkit-text-stroke: 1px rgba(255,255,255,0.2);
-            color: transparent;
+        /* Typography */
+        .font-masthead { font-family: 'Anton', sans-serif; letter-spacing: -2px; }
+        .font-comic { font-family: 'Bangers', cursive; letter-spacing: 1px; }
+        .font-pixel { font-family: 'Press Start 2P', cursive; }
+        .font-terminal { font-family: 'VT323', monospace; }
+
+        .mag-box {
+            border: 3px solid black;
+            box-shadow: 6px 6px 0px black;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+        .mag-box:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px black;
+        }
+
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+        }
+
+        .sticker {
+            position: absolute;
+            background: var(--neon-yellow);
+            color: black;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-family: 'Bangers', cursive;
+            transform: rotate(-15deg);
+            border: 2px solid black;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .tape-strip {
+            position: absolute;
+            width: 80px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.4);
+            transform: rotate(45deg);
+            top: -5px;
+            right: -25px;
+            z-index: 20;
+            border-left: 1px dashed rgba(0,0,0,0.2);
+            border-right: 1px dashed rgba(0,0,0,0.2);
+        }
+
+        .halftone-bg {
+            background-image: radial-gradient(circle, black 1px, transparent 1.5px);
+            background-size: 10px 10px;
+            opacity: 0.1;
+        }
+
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-yellow); border: 2px solid black; }
+
+        /* 🎧 FIXED MARQUEE YOU WERE MISSING */
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 10s linear infinite;
+        }
+        .paused-badge {
+        font-family: 'Press Start 2P', monospace;
+        font-size: 9px;
+        color: #ff0033;
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        background: rgba(0,0,0,0.6);
+        padding: 2px 4px;
+        border: 1px solid #ff0033;
+        animation: blink 1s infinite steps(2);
+        z-index: 9999;
+    }
+
+    @keyframes blink {
+        50% { opacity: 0; }
+    }
+
+    /* Stronger CRT distortion when paused */
+    .paused-screen {
+        filter: contrast(140%) brightness(85%);
+        background-image:
+            linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,0,0,0.05), rgba(0,255,0,0.05), rgba(0,0,255,0.05));
+        background-size: 100% 3px, 6px 100%;
+    }
+
     </style>
 </head>
-<body>
 
-    <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
-    <div id="canvas-container"></div>
-    <div class="noise-overlay"></div>
+<body class="min-h-screen p-2 md:p-6 flex justify-center items-start selection:bg-yellow-400 selection:text-black">
 
-    <nav class="fixed top-0 w-full p-8 flex justify-between items-center z-50 mix-blend-difference">
-        <div class="text-xl font-bold italic tracking-tighter text-[var(--accent-color)]">UDAYAN.J</div>
-        <div class="hidden md:flex space-x-8 text-xs font-bold tracking-widest items-center">
-            <a href="#work" class="hover:text-[var(--accent-color)] transition-colors">PROJECTS</a>
-            <a href="#about" class="hover:text-[var(--accent-color)] transition-colors">STACK</a>
-            <a href="#contact" class="hover:text-[var(--accent-color)] transition-colors">CONNECT</a>
-            <a href="/about" class="border border-[var(--accent-color)] px-4 py-2 text-[var(--accent-color)] hover:bg-[var(--accent-color)] hover:text-black transition-all">ABOUT ME</a>
-        </div>
-    </nav>
+    <div class="paper-texture"></div>
 
-    <main class="relative z-10">
+    <!-- EVERYTHING BELOW IS EXACTLY YOUR STRUCTURE -->
+    <!-- I will continue in Part 2 because it's too long for one message. -->
+
+<!-- END OF PART 1 — CONTINUE TO PART 2 -->
+    <!-- Magazine Container -->
+    <div class="max-w-7xl w-full bg-white relative shadow-2xl overflow-hidden border-4 border-black">
         
-        <section class="min-h-screen flex flex-col justify-center px-6 md:px-20 relative">
-            <div class="hero-content w-full">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="h-[1px] w-12 bg-[var(--accent-color)]"></div>
-                    <p class="reveal-text text-xs font-bold text-[var(--accent-color)] tracking-[0.3em]">LLM OPS // VECTOR DB // RAG</p>
+        <!-- ================= HEADER SECTION ================= -->
+        <header class="relative border-b-4 border-black">
+            <div class="h-4 w-full flex">
+                <div class="w-1/3 h-full bg-cyan-400 border-r-2 border-black"></div>
+                <div class="w-1/3 h-full bg-yellow-400 border-r-2 border-black"></div>
+                <div class="w-1/3 h-full bg-red-500"></div>
+            </div>
+
+            <div class="p-4 md:p-8 flex flex-col md:flex-row justify-between items-center bg-gray-100 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 translate-y-1/2 -translate-x-1/2"></div>
+
+                <div class="z-10 text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start gap-4 mb-2">
+                        <i data-lucide="disc" class="w-8 h-8 md:w-12 md:h-12 text-blue-600"></i>
+                        <span class="font-terminal text-sm md:text-xl bg-black text-lime-400 px-2 py-1">VOL. 1 NO. 1</span>
+                        <span class="font-terminal text-sm md:text-xl bg-red-600 text-white px-2 py-1 transform rotate-2">L. 5000</span>
+                    </div>
+                    <h1 class="font-masthead text-6xl md:text-9xl leading-none tracking-tighter text-black drop-shadow-[4px_4px_0_rgba(0,255,255,1)]">
+                        UDAYAN J.
+                    </h1>
+                    <h2 class="font-pixel text-xs md:text-sm mt-2 text-purple-800 uppercase tracking-widest bg-yellow-200 inline-block px-2 border-2 border-black shadow-[4px_4px_0_black]">
+                        AI & DATA ENGINEERING // MAGAZINE
+                    </h2>
                 </div>
+
+                <div class="z-10 mt-4 md:mt-0 flex flex-col items-end">
+                    <div class="bg-white border-2 border-black p-2 shadow-[4px_4px_0_black]">
+                        <div class="h-12 w-32 flex items-end gap-[2px]">
+                            <div class="h-full w-1 bg-black"></div><div class="h-full w-2 bg-white"></div>
+                            <div class="h-full w-1 bg-black"></div><div class="h-full w-3 bg-black"></div>
+                            <div class="h-full w-1 bg-white"></div><div class="h-full w-1 bg-black"></div>
+                            <div class="h-full w-4 bg-white"></div><div class="h-full w-2 bg-black"></div>
+                            <div class="h-full w-1 bg-white"></div><div class="h-full w-3 bg-black"></div>
+                            <div class="h-full w-1 bg-white"></div><div class="h-full w-2 bg-black"></div>
+                        </div>
+                        <p class="font-terminal text-xs text-center mt-1">DEC 2025</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-black text-white font-terminal py-1 px-4 text-center text-sm md:text-base border-t-2 border-black overflow-hidden whitespace-nowrap">
+                <span class="animate-pulse">★ SPECIAL EDITION: GENERATIVE AI REVOLUTION ★</span> 
+                <span class="mx-4 text-gray-500">|</span> 
+                <span>PYTORCH TIPS</span> 
+                <span class="mx-4 text-gray-500">|</span> 
+                <span>DIFFUSION MODELS</span>
+                <span class="mx-4 text-gray-500">|</span> 
+                <span>RAG ARCHITECTURES</span>
+            </div>
+        </header>
+
+        <!-- ================= MAIN GRID LAYOUT ================= -->
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-black border-b-4 border-black">
+            
+            <!-- LEFT COLUMN -->
+            <aside class="lg:col-span-3 bg-red-100 p-4 border-b-4 lg:border-b-0 lg:border-r-4 border-black flex flex-col gap-6 relative">
+                <div class="halftone-bg absolute inset-0 pointer-events-none"></div>
+
+                <!-- PROJECT 1 -->
+                <article class="mag-box bg-slate-800 text-green-400 group h-full">
+                    <div class="bg-gray-300 border-b-2 border-black px-2 py-1 flex items-center justify-between">
+                        <span class="font-terminal text-black text-xs">C:\PROJECTS\RAG_BOT.EXE</span>
+                    </div>
+                    <div class="p-4 flex flex-col h-full justify-between">
+                        <div>
+                            <h3 class="font-pixel text-xs mb-4 text-yellow-300 leading-relaxed group-hover:underline decoration-wavy">
+                                FAQ CUSTOMER<br>RAG BOT
+                            </h3>
+                            <div class="w-full h-24 bg-black border border-green-700 mb-3 p-2 font-terminal text-xs overflow-hidden opacity-90 scanlines">
+                                > INIT MODEL<br>
+                                > LOADING VECTORS...<br>
+                                > RETRIEVAL AUGMENTED GENERATION ACTIVE.<br>
+                                > READY FOR QUERIES_
+                            </div>
+                            <p class="font-mono text-xs text-white leading-tight opacity-80 mb-4">
+                                Retrieval-augmented FAQ chatbot. Solves customer queries with high precision using vector DBs.
+                            </p>
+                        </div>
+                        <a href="https://github.com/azycr4yy/FAQcustomer" target="_blank" class="block w-full bg-gray-300 hover:bg-white text-black font-bold text-center py-2 border-2 border-black font-terminal shadow-[2px_2px_0_black]">
+                            DOWNLOAD SRC
+                        </a>
+                    </div>
+                </article>
+
+                <!-- PROJECT 2 -->
+                <article class="mag-box bg-indigo-900 text-white relative overflow-hidden h-full">
+                    <div class="p-4 relative z-10">
+                        <div class="absolute top-0 right-0 bg-yellow-400 text-black font-comic text-xs px-2 py-1 border-l-2 border-b-2 border-black transform rotate-1">
+                            HOT!
+                        </div>
+                        <h3 class="font-masthead text-4xl text-transparent bg-clip-text bg-gradient-to-br from-pink-400 to-cyan-400 drop-shadow-sm mb-2">
+                            DDPM
+                        </h3>
+                        <h4 class="font-terminal text-lg text-pink-300 mb-2">EMOJI DIFFUSION</h4>
+
+                        <div class="grid grid-cols-4 gap-1 mb-4 opacity-80">
+                            <div class="aspect-square bg-pink-500 border border-white"></div>
+                            <div class="aspect-square bg-cyan-500 border border-white"></div>
+                            <div class="aspect-square bg-yellow-500 border border-white"></div>
+                            <div class="aspect-square bg-purple-500 border border-white"></div>
+                        </div>
+
+                        <p class="font-sans text-xs leading-tight mb-4 border-l-4 border-pink-500 pl-2">
+                            PyTorch U-Net diffusion model trained to hallucinate new emojis.
+                        </p>
+
+                        <a href="https://github.com/azycr4yy/DDPM" target="_blank" class="inline-flex items-center gap-2 text-xs font-bold text-cyan-300 hover:text-white">
+                            <i data-lucide="github" class="w-4 h-4"></i> VIEW REPO ->
+                        </a>
+                    </div>
+                </article>
+            </aside>
+
+            <!-- CENTER COLUMN -->
+            <section class="lg:col-span-6 bg-yellow-400 p-4 md:p-8 flex flex-col relative overflow-hidden">
+                <div class="absolute inset-0" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+                <div class="mag-box bg-white flex-grow relative p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[10px_10px_0_rgba(0,0,0,0.8)] border-4 border-black">
+                    <div class="tape-strip"></div>
+
+                    <div class="sticker top-4 left-4 rotate-12 bg-cyan-300">ESCLUSIVO</div>
+                    <div class="sticker bottom-12 right-4 -rotate-6 bg-red-500 text-white border-white">NUOVO</div>
+
+                    <div class="relative w-full max-w-md aspect-video bg-black mb-6 border-4 border-black shadow-[4px_4px_0_gray] overflow-hidden group">
+                        <div class="absolute inset-0 pointer-events-none z-20 scanlines opacity-50"></div>
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-b from-blue-900 to-purple-900 relative">
+                            <svg class="w-32 h-32 text-green-400 drop-shadow-[0_0_10px_rgba(50,205,50,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            <div class="absolute bottom-2 left-0 w-full text-center font-terminal text-green-500 text-sm animate-pulse">
+                                SYSTEM READY...
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="font-masthead text-5xl md:text-7xl leading-[0.9] text-black mb-4 transform -rotate-1">
+                        <span class="block text-2xl md:text-3xl font-comic text-red-600 mb-1 transform rotate-1">2025:</span>
+                        UDAYAN SCOPRE <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">L’AI GENERATIVA</span>
+                    </h2>
+
+                    <div class="font-serif text-lg md:text-xl leading-tight max-w-lg mx-auto text-gray-800 italic">
+                        "Simply Lovely"
+                    </div>
+
+                    <div class="mt-8 flex gap-4">
+                        <a href="https://in.linkedin.com/in/udayan-j-4034b0368" target="_blank" class="px-6 py-2 bg-blue-600 text-white font-bold font-sans border-2 border-black shadow-[4px_4px_0_black]">
+                            READ BIO
+                        </a>
+                        <a href="mailto:contact@example.com" class="px-6 py-2 bg-white text-black font-bold font-sans border-2 border-black shadow-[4px_4px_0_black]">
+                            CONTACT
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT COLUMN — SPOTIFY WIDGET -->
+            <aside class="lg:col-span-3 bg-cyan-200 p-4 border-t-4 lg:border-t-0 lg:border-l-4 border-black flex flex-col gap-6">
                 
-                <h1 class="reveal-text text-[12vw] leading-[0.8] font-extrabold tracking-tighter display-font mix-blend-lighten uppercase">
-                    UDAYAN<span class="text-[var(--accent-color)]">.</span><br>
-                    <span class="text-outline italic">JOSHI</span>
-                </h1>
-                
-                <div class="mt-8 flex flex-col md:flex-row justify-between items-end">
-                    <div class="reveal-text max-w-xl text-lg md:text-xl text-gray-300 font-light leading-relaxed">
-                        <span class="text-[var(--accent-color)] font-bold">></span> Neural Architect & Developer.<br>
-                        Architecting high-scale <span class="text-white font-bold italic">RAG Systems</span> and orchestrating <span class="text-white font-bold italic">LLM Agents</span>. Optimizing semantic retrieval and inference pipelines for enterprise intelligence.
+                <div class="mag-box bg-orange-400 p-1 relative overflow-hidden">
+                    <div class="bg-gray-800 p-3 h-full border-2 border-gray-600 shadow-inner flex flex-col relative">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-400 font-bold text-xs italic">MUZIC IM LISTENING TO</span>
+                        </div>
+
+                        <div class="bg-[#2b3a28] border-4 border-gray-500 rounded-sm p-1 mb-3 relative shadow-inner">
+                            <div class="bg-[#4a5f45] h-8 w-full flex items-center overflow-hidden px-1 relative">
+                                <span id="spotify-song-text" class="font-pixel text-[10px] text-[#39FF14] animate-marquee">
+                                    LOADING STREAM...
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="aspect-square bg-black rounded-sm border-2 border-gray-500 relative mb-3 overflow-hidden shadow-[inset_0_0_10px_rgba(0,0,0,0.8)] group">
+                            <img id="spotify-album-art" src="https://placehold.co/300x300/1a1a1a/39FF14/png?text=NO+DISC" class="w-full h-full object-cover opacity-80">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SYSTEM SPECS -->
+                <div class="mag-box bg-cyan-200 p-0">
+                    <div class="bg-black text-white p-2 flex justify-between items-center">
+                        <span class="font-comic tracking-wider">SYSTEM SPECS</span>
                     </div>
                     
-                    <div class="hidden md:block text-right">
-                        <div class="text-xs text-gray-500 mb-2">AVAILABLE FOR HIRE</div>
-                        <div class="text-4xl font-bold text-[var(--accent-color)] animate-pulse">● ONLINE</div>
+                    <div class="p-3 font-mono text-sm flex-grow bg-white">
+                        <table class="w-full border-collapse">
+                            <tbody>
+                                <tr class="border-b-2 border-gray-300"><td class="py-1 font-bold">PYTHON</td><td class="py-1 text-right text-blue-600 font-black">v3.12</td></tr>
+                                <tr class="border-b-2 border-gray-300"><td class="py-1 font-bold">MYSQL</td><td class="py-1 text-right text-red-600 font-black">ACTIVE</td></tr>
+                                <tr class="border-b-2 border-gray-300"><td class="py-1 font-bold">PYTORCH</td><td class="py-1 text-right text-orange-600 font-black">INSTALLED</td></tr>
+                                <tr class="border-b-2 border-gray-300"><td class="py-1 font-bold">TENSORFLOW</td><td class="py-1 text-right text-orange-600 font-black">READY</td></tr>
+                                <tr class="border-b-2 border-gray-300"><td class="py-1 font-bold">LANGCHAIN</td><td class="py-1 text-right text-green-600 font-black">LOADED</td></tr>
+                                <tr><td class="py-1 font-bold">LANGGRAPH</td><td class="py-1 text-right text-green-600 font-black">LOADED</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section id="about" class="py-24 px-6 md:px-20 border-t border-gray-900">
-            <div class="mb-12 flex items-end gap-4">
-                <h2 class="text-4xl md:text-6xl font-bold display-font uppercase">Tech_Arsenal</h2>
-                <span class="text-[var(--accent-color)] text-xl mb-2 font-mono">v2.4</span>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
-                    <div class="text-2xl font-bold mb-2">DL/ML</div>
-                    <div class="text-xs opacity-60 group-hover:opacity-100">PyTorch, TensorFlow, Keras</div>
-                </div>
-                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
-                    <div class="text-2xl font-bold mb-2">Vision</div>
-                    <div class="text-xs opacity-60 group-hover:opacity-100">YOLO, OpenCV, GANs</div>
-                </div>
-                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
-                    <div class="text-2xl font-bold mb-2">LLMs</div>
-                    <div class="text-xs opacity-60 group-hover:opacity-100">LangChain, LlamaIndex, HuggingFace</div>
-                </div>
-                <div class="glass-panel p-6 hover:bg-[var(--accent-color)] hover:text-black transition-all duration-300 group">
-                    <div class="text-2xl font-bold mb-2">Backend</div>
-                    <div class="text-xs opacity-60 group-hover:opacity-100">FastAPI, Docker, Pinecone</div>
-                </div>
-            </div>
-        </section>
+            </aside>
+        </main>
 
-        <section id="work" class="h-screen w-full relative overflow-hidden flex flex-col justify-center border-t border-gray-900">
-            <div class="absolute top-12 left-6 md:left-20 z-20">
-                <h2 class="text-5xl md:text-7xl font-bold display-font tracking-tighter italic mix-blend-difference">DEPLOYMENTS</h2>
-                <div class="text-xs font-mono text-[var(--accent-color)] mt-2 animate-pulse">
-                    &larr; DRAG TO ROTATE &rarr;
-                </div>
+        <footer class="bg-gray-100 p-4 border-t-4 border-black relative">
+            <div class="absolute -top-6 right-4 flex gap-2">
+                <a href="https://github.com/azycr4yy" target="_blank" class="w-10 h-10 bg-white border-2 border-black shadow-[3px_3px_0_black] flex items-center justify-center">
+                    <i data-lucide="github" class="w-6 h-6"></i>
+                </a>
+                <a href="https://in.linkedin.com/in/udayan-j-4034b0368" target="_blank" class="w-10 h-10 bg-blue-600 text-white border-2 border-black shadow-[3px_3px_0_black] flex items-center justify-center">
+                    <i data-lucide="linkedin" class="w-6 h-6"></i>
+                </a>
+                <a href="https://instagram.com/uday4n" target="_blank" class="w-10 h-10 bg-pink-500 text-white border-2 border-black shadow-[3px_3px_0_black] flex items-center justify-center">
+                    <i data-lucide="instagram" class="w-6 h-6"></i>
+                </a>
             </div>
 
-            <div class="perspective-container w-full h-[600px] relative cursor-grab active:cursor-grabbing" id="carousel-container">
-                <div id="carousel">
-                    <div class="carousel-item">
-                        <a href="https://github.com/azycr4yy/DDPM" target="_blank" class="project-card-3d group">
-                            <div>
-                                <div class="flex justify-between">
-                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">01 // GEN_AI</div>
-                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
-                                </div>
-                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">Emoji Diffusion</h3>
-                                <p class="text-xs text-gray-400 leading-relaxed">Custom DDPM implementation in PyTorch.</p>
-                            </div>
-                            <div class="flex gap-1 flex-wrap">
-                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">PyTorch</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="carousel-item">
-                        <a href="https://github.com/azycr4yy/FAQcustomer" target="_blank" class="project-card-3d group">
-                            <div>
-                                <div class="flex justify-between">
-                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">02 // RAG_OPS</div>
-                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
-                                </div>
-                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">FAQ RAG Bot</h3>
-                                <p class="text-xs text-gray-400 leading-relaxed">Enterprise support agent. Semantic search via Vector DBs.</p>
-                            </div>
-                            <div class="flex gap-1 flex-wrap">
-                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">LangChain</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="project-card-3d group">
-                            <div>
-                                <div class="flex justify-between">
-                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">03 // NLP_CORE</div>
-                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
-                                </div>
-                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">Sentiment Pulse</h3>
-                                <p class="text-xs text-gray-400 leading-relaxed">Real-time financial market sentiment analyzer.</p>
-                            </div>
-                            <div class="flex gap-1 flex-wrap">
-                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">BERT</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="project-card-3d group">
-                            <div>
-                                <div class="flex justify-between">
-                                    <div class="text-[10px] font-bold tracking-widest text-gray-500">04 // VISION</div>
-                                    <div class="text-[var(--accent-color)] opacity-0 group-hover:opacity-100 transition-opacity">↗</div>
-                                </div>
-                                <h3 class="text-3xl font-bold mt-4 mb-2 text-white group-hover:text-[var(--accent-color)]">Neural Style</h3>
-                                <p class="text-xs text-gray-400 leading-relaxed">High-resolution style transfer pipeline.</p>
-                            </div>
-                            <div class="flex gap-1 flex-wrap">
-                                <span class="text-[8px] border border-white/10 px-2 py-1 rounded text-gray-400">PyTorch</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <a href="https://github.com/azycr4yy/" target="_blank" class="project-card-3d group border-dashed flex items-center justify-center text-center">
-                            <div>
-                                <div class="text-6xl text-[var(--accent-color)] mb-4">+</div>
-                                <h3 class="text-xl font-bold mb-2 text-white">GITHUB</h3>
-                                <p class="text-xs text-gray-500">Explore full repository</p>
-                            </div>
-                        </a>
-                    </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div class="bg-orange-200 p-2 border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,0.2)]">
+                    <div class="font-comic text-xs bg-black text-white inline-block px-1 mb-1">INSIDE</div>
+                    <h4 class="font-masthead text-xl">EMOJI LAB</h4>
+                </div>
+                <div class="bg-lime-200 p-2 border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,0.2)]">
+                    <div class="font-comic text-xs bg-black text-white inline-block px-1 mb-1">REVIEW</div>
+                    <h4 class="font-masthead text-xl">DATAMODEL PRO</h4>
+                </div>
+                <div class="bg-purple-200 p-2 border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,0.2)]">
+                    <div class="font-comic text-xs bg-black text-white inline-block px-1 mb-1">TUTORIAL</div>
+                    <h4 class="font-masthead text-xl">AI WORKBENCH</h4>
+                </div>
+                <div class="bg-white p-2 border-2 border-black flex items-center justify-center">
+                    <p class="font-terminal text-xs text-center">
+                        © 2006-Forever Udayan Joshi<br>
+                        Printed in Cyberspace
+                    </p>
                 </div>
             </div>
-        </section>
+        </footer>
 
-        <section id="contact" class="border-t border-gray-900 bg-[#050505]">
-            <div class="px-6 md:px-20 py-20">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div>
-                        <h2 class="text-5xl md:text-6xl lg:text-7xl display-font font-bold mb-8 italic relative z-10">READY TO<br>DEPLOY?</h2>
-                        <a href="mailto:hello@example.com" class="text-xl hover:text-[var(--accent-color)] transition-colors relative z-10">&rarr; Contact Me</a>
-                    </div>
-                    <div class="flex flex-col justify-end space-y-6 relative z-20">
-                        <a href="https://in.linkedin.com/in/udayan-j-4034b0368" target="_blank" class="flex items-center justify-between border-b border-gray-800 pb-4 hover:border-[var(--accent-color)] group bg-[#050505]">
-                            <span class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors">LINKEDIN</span>
-                            <span class="text-gray-500 group-hover:translate-x-2 transition-transform">↗</span>
-                        </a>
-                        <a href="https://github.com/azycr4yy/" target="_blank" class="flex items-center justify-between border-b border-gray-800 pb-4 hover:border-[var(--accent-color)] group bg-[#050505]">
-                            <span class="text-2xl font-bold group-hover:text-[var(--accent-color)] transition-colors">GITHUB</span>
-                            <span class="text-gray-500 group-hover:translate-x-2 transition-transform">↗</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="mt-20 flex justify-between items-end text-xs text-gray-600 font-mono">
-                    <div>UDAYAN J // 2024</div>
-                    <div class="text-right">SYSTEM STATUS: ONLINE<br>LOCATION: LATENT SPACE</div>
-                </div>
-            </div>
-        </section>
+    </div>
 
-    </main>
+    <!-- ====================== JAVASCRIPT ====================== -->
+<script>
+async function updateSpotifyWidget() {
+    try {
+        const res = await fetch("http://127.0.0.1:5000/api/now-playing");
+        const data = await res.json();
 
-    <script id="vertexShader" type="x-shader/x-vertex">
-        varying vec2 vUv; varying float vDistortion; uniform float uTime; uniform vec2 uMouse;
-        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-        vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-        vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-        float snoise(vec2 v) {
-            const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-            vec2 i  = floor(v + dot(v, C.yy) ); vec2 x0 = v - i + dot(i, C.xx);
-            vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-            vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1;
-            i = mod289(i); vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
-            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-            m = m*m ; m = m*m ;
-            vec3 x = 2.0 * fract(p * C.www) - 1.0; vec3 h = abs(x) - 0.5;
-            vec3 ox = floor(x + 0.5); vec3 a0 = x - ox;
-            m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-            vec3 g; g.x  = a0.x  * x0.x  + h.x  * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-            return 130.0 * dot(m, g);
-        }
-        void main() {
-            vUv = uv;
-            float dist = distance(uv, uMouse);
-            float mouseEffect = smoothstep(0.5, 0.0, dist) * 0.5;
-            float noiseVal = snoise(vec2(position.x * 0.3 + uTime * 0.1, position.y * 0.3 + uTime * 0.05));
-            vec3 pos = position;
-            pos.z += noiseVal * (2.5 + mouseEffect * 6.0); 
-            vDistortion = noiseVal;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-        }
-    </script>
-    <script id="fragmentShader" type="x-shader/x-fragment">
-        varying vec2 vUv; varying float vDistortion; uniform float uTime; uniform vec2 uResolution;
-        void main() {
-            vec2 grid = gl_FragCoord.xy / 4.0; vec2 gridPos = fract(grid);
-            float dither = 0.0;
-            if (gridPos.x > 0.5) { if (gridPos.y > 0.5) dither = 0.0; else dither = 0.75; } 
-            else { if (gridPos.y > 0.5) dither = 0.50; else dither = 0.25; }
-            vec3 color1 = vec3(0.02, 0.02, 0.02); vec3 color2 = vec3(0.8, 1.0, 0.0); vec3 color3 = vec3(0.1, 0.15, 0.1);
-            float intensity = vDistortion * 0.5 + 0.5; intensity += dither * 0.15;
-            vec3 finalColor = mix(color1, color3, intensity);
-            float scanline = sin(vUv.y * 200.0 + uTime * 5.0) * 0.02; finalColor += scanline;
-            if(intensity > 0.75) { finalColor = mix(finalColor, color2, (intensity - 0.75) * 2.0); }
-            gl_FragColor = vec4(finalColor, 1.0);
-        }
-    </script>
+        console.log("API DATA:", data);
 
-    <script>
-        // Three.js & GSAP Init (Same as before)
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-        const geometry = new THREE.IcosahedronGeometry(4, 60);
-        const material = new THREE.ShaderMaterial({
-            vertexShader: document.getElementById('vertexShader').textContent,
-            fragmentShader: document.getElementById('fragmentShader').textContent,
-            uniforms: { uTime: { value: 0 }, uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }, uMouse: { value: new THREE.Vector2(0.5, 0.5) } },
-            wireframe: true, side: THREE.DoubleSide
-        });
-        const sphere = new THREE.Mesh(geometry, material);
-        scene.add(sphere);
-        camera.position.z = 6;
-        let mouse = { x: 0.5, y: 0.5 }; let targetMouse = { x: 0.5, y: 0.5 };
-        window.addEventListener('mousemove', (e) => {
-            targetMouse.x = e.clientX / window.innerWidth; targetMouse.y = 1.0 - (e.clientY / window.innerHeight);
-            gsap.to(".cursor-dot", { x: e.clientX, y: e.clientY, duration: 0.1 });
-            gsap.to(".cursor-outline", { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power2.out" });
-        });
-        const clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            const elapsedTime = clock.getElapsedTime();
-            material.uniforms.uTime.value = elapsedTime;
-            mouse.x += (targetMouse.x - mouse.x) * 0.05; mouse.y += (targetMouse.y - mouse.y) * 0.05;
-            material.uniforms.uMouse.value.set(mouse.x, mouse.y);
-            sphere.rotation.y = elapsedTime * 0.05; sphere.rotation.x = Math.sin(elapsedTime * 0.1) * 0.05;
-            renderer.render(scene, camera);
-        }
-        animate();
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-        });
-        gsap.registerPlugin(ScrollTrigger);
-        const tl = gsap.timeline();
-        tl.to("#canvas-container", { opacity: 1, duration: 2 }).from(".reveal-text", { y: 50, opacity: 0, duration: 1, stagger: 0.1, ease: "power3.out" }, "-=1.5");
+        const text = document.getElementById("spotify-song-text");
+        const img = document.getElementById("spotify-album-art");
 
-        // --- UPDATED 3D Carousel Logic ---
-        const carousel = document.querySelector('#carousel');
-        const carouselContainer = document.querySelector('#carousel-container');
-        let currentAngle = 0; let targetAngle = 0; let isDragging = false;
-        let startX = 0; let lastX = 0; let totalDrag = 0; // Track drag distance
+        console.log("TEXT ELEMENT:", text);
+        console.log("IMG ELEMENT:", img);
 
-        const updateLayout = () => {
-            const items = document.querySelectorAll('.carousel-item');
-            const totalItems = items.length;
-            const angleStep = 360 / totalItems;
-            const cardWidth = 300;
-            let radius = Math.round( (cardWidth + 40) / (2 * Math.tan(Math.PI / totalItems)) );
-            if (window.innerWidth < 768) radius = Math.max(radius, 280); else radius = Math.max(radius, 450);
-            items.forEach((item, index) => {
-                const angle = index * angleStep;
-                item.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
-            });
-        };
-        updateLayout();
-        window.addEventListener('resize', updateLayout);
-
-        function animateCarousel() {
-            currentAngle += (targetAngle - currentAngle) * 0.05;
-            if(carousel) carousel.style.transform = `rotateY(${-currentAngle}deg)`;
-            requestAnimationFrame(animateCarousel);
-        };
-        animateCarousel();
-
-        if(carouselContainer) {
-            carouselContainer.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                startX = e.clientX;
-                lastX = e.clientX;
-                totalDrag = 0; // Reset drag distance
-                carouselContainer.classList.add('cursor-grabbing');
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaX = e.clientX - lastX;
-                lastX = e.clientX;
-                totalDrag += Math.abs(deltaX); // Accumulate movement
-                // SLOWER ROTATION: Reduced multiplier from 0.5 to 0.15
-                targetAngle -= deltaX * 0.15; 
-            });
-
-            window.addEventListener('mouseup', () => {
-                isDragging = false;
-                if(carouselContainer) carouselContainer.classList.remove('cursor-grabbing');
-            });
-            
-            // Touch Logic
-            carouselContainer.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                startX = e.touches[0].clientX;
-                lastX = e.touches[0].clientX;
-                totalDrag = 0;
-            });
-
-            window.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-                const deltaX = e.touches[0].clientX - lastX;
-                lastX = e.touches[0].clientX;
-                totalDrag += Math.abs(deltaX);
-                // SLOWER ROTATION (Touch): Reduced from 0.8 to 0.2
-                targetAngle -= deltaX * 0.2; 
-            });
-
-            window.addEventListener('touchend', () => {
-                isDragging = false;
-            });
+        if (!text || !img) {
+            console.log("❌ WRONG ID — Widget elements not found in HTML.");
+            return;
         }
 
-        // CLICK VS DRAG PREVENTION
-        // Prevent links from firing if the user was dragging the carousel
-        document.querySelectorAll('.carousel-item a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                // If moved more than 5 pixels, treat as drag, not click
-                if (totalDrag > 5) {
-                    e.preventDefault();
-                }
-            });
-        });
+        const screen = img.parentElement;
 
-    </script>
+        screen.querySelectorAll(".paused-badge").forEach(b => b.remove());
+        screen.classList.remove("paused-screen");
+
+        if (data.mode === "live") {
+            text.textContent = `${data.title} — ${data.artist}`;
+            img.src = data.album_art;
+        }
+        else if (data.mode === "history") {
+            text.textContent = `PAUSED — ${data.title} — ${data.artist}`;
+            img.src = data.album_art;
+
+            const badge = document.createElement("div");
+            badge.className = "paused-badge";
+            badge.textContent = "PAUSED";
+            screen.appendChild(badge);
+
+            screen.classList.add("paused-screen");
+        }
+        else {
+            text.textContent = "NO MUSIC PLAYING";
+            img.src = "https://placehold.co/300x300/1a1a1a/39FF14/png?text=NO+DISC";
+        }
+
+    } catch (err) {
+        console.log("Spotify Widget Error:", err);
+    }
+}
+
+setInterval(updateSpotifyWidget, 5000);
+updateSpotifyWidget();
+</script>
+
+
 </body>
 </html>
