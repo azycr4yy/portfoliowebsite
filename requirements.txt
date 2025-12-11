@@ -1,3 +1,4 @@
-fastapi
-uvicorn
-pydantic
+flask
+flask-cors
+spotipy
+python-dotenv
