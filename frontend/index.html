@@ -107,7 +107,7 @@
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: var(--neon-yellow); border: 2px solid black; }
 
-        /* 🎧 FIXED MARQUEE YOU WERE MISSING */
+        /* 🎧 MARQUEE ANIMATION */
         @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
@@ -117,32 +117,33 @@
             white-space: nowrap;
             animation: marquee 10s linear infinite;
         }
+        
         .paused-badge {
-        font-family: 'Press Start 2P', monospace;
-        font-size: 9px;
-        color: #ff0033;
-        position: absolute;
-        top: 4px;
-        left: 4px;
-        background: rgba(0,0,0,0.6);
-        padding: 2px 4px;
-        border: 1px solid #ff0033;
-        animation: blink 1s infinite steps(2);
-        z-index: 9999;
-    }
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            color: #ff0033;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0,0,0,0.6);
+            padding: 2px 4px;
+            border: 1px solid #ff0033;
+            animation: blink 1s infinite steps(2);
+            z-index: 9999;
+        }
 
-    @keyframes blink {
-        50% { opacity: 0; }
-    }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
 
-    /* Stronger CRT distortion when paused */
-    .paused-screen {
-        filter: contrast(140%) brightness(85%);
-        background-image:
-            linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,0,0,0.05), rgba(0,255,0,0.05), rgba(0,0,255,0.05));
-        background-size: 100% 3px, 6px 100%;
-    }
+        /* Stronger CRT distortion when paused */
+        .paused-screen {
+            filter: contrast(140%) brightness(85%);
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,0,0,0.05), rgba(0,255,0,0.05), rgba(0,0,255,0.05));
+            background-size: 100% 3px, 6px 100%;
+        }
 
     </style>
 </head>
@@ -151,10 +152,6 @@
 
     <div class="paper-texture"></div>
 
-    <!-- EVERYTHING BELOW IS EXACTLY YOUR STRUCTURE -->
-    <!-- I will continue in Part 2 because it's too long for one message. -->
-
-<!-- END OF PART 1 — CONTINUE TO PART 2 -->
     <!-- Magazine Container -->
     <div class="max-w-7xl w-full bg-white relative shadow-2xl overflow-hidden border-4 border-black">
         
@@ -170,22 +167,23 @@
                 <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
                 <div class="absolute bottom-0 left-0 w-64 h-64 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 translate-y-1/2 -translate-x-1/2"></div>
 
-                <div class="z-10 text-center md:text-left">
+                <div class="z-10 text-center md:text-left w-full md:w-auto">
                     <div class="flex items-center justify-center md:justify-start gap-4 mb-2">
                         <i data-lucide="disc" class="w-8 h-8 md:w-12 md:h-12 text-blue-600"></i>
                         <span class="font-terminal text-sm md:text-xl bg-black text-lime-400 px-2 py-1">VOL. 1 NO. 1</span>
                         <span class="font-terminal text-sm md:text-xl bg-red-600 text-white px-2 py-1 transform rotate-2">L. 5000</span>
                     </div>
-                    <h1 class="font-masthead text-6xl md:text-9xl leading-none tracking-tighter text-black drop-shadow-[4px_4px_0_rgba(0,255,255,1)]">
+                    <!-- Responsive Text Size Fix -->
+                    <h1 class="font-masthead text-5xl sm:text-6xl md:text-9xl leading-none tracking-tighter text-black drop-shadow-[4px_4px_0_rgba(0,255,255,1)]">
                         UDAYAN J.
                     </h1>
-                    <h2 class="font-pixel text-xs md:text-sm mt-2 text-purple-800 uppercase tracking-widest bg-yellow-200 inline-block px-2 border-2 border-black shadow-[4px_4px_0_black]">
+                    <h2 class="font-pixel text-[10px] md:text-sm mt-2 text-purple-800 uppercase tracking-widest bg-yellow-200 inline-block px-2 border-2 border-black shadow-[4px_4px_0_black]">
                         AI & DATA ENGINEERING // MAGAZINE
                     </h2>
                 </div>
 
-                <div class="z-10 mt-4 md:mt-0 flex flex-col items-end">
-                    <div class="bg-white border-2 border-black p-2 shadow-[4px_4px_0_black]">
+                <div class="z-10 mt-4 md:mt-0 flex flex-col items-end w-full md:w-auto">
+                    <div class="bg-white border-2 border-black p-2 shadow-[4px_4px_0_black] self-center md:self-auto">
                         <div class="h-12 w-32 flex items-end gap-[2px]">
                             <div class="h-full w-1 bg-black"></div><div class="h-full w-2 bg-white"></div>
                             <div class="h-full w-1 bg-black"></div><div class="h-full w-3 bg-black"></div>
@@ -211,10 +209,12 @@
         </header>
 
         <!-- ================= MAIN GRID LAYOUT ================= -->
+        <!-- Added Grid Ordering classes (order-1, order-2) to ensure Center Column is TOP on mobile -->
         <main class="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-black border-b-4 border-black">
             
-            <!-- LEFT COLUMN -->
-            <aside class="lg:col-span-3 bg-red-100 p-4 border-b-4 lg:border-b-0 lg:border-r-4 border-black flex flex-col gap-6 relative">
+            <!-- ====== LEFT COLUMN (Projects) ====== -->
+            <!-- Mobile: Order 2 (Below Cover) | Desktop: Order 1 (Left) -->
+            <aside class="order-2 lg:order-1 lg:col-span-3 bg-red-100 p-4 border-b-4 lg:border-b-0 lg:border-r-4 border-black flex flex-col gap-6 relative">
                 <div class="halftone-bg absolute inset-0 pointer-events-none"></div>
 
                 <!-- PROJECT 1 -->
@@ -272,8 +272,9 @@
                 </article>
             </aside>
 
-            <!-- CENTER COLUMN -->
-            <section class="lg:col-span-6 bg-yellow-400 p-4 md:p-8 flex flex-col relative overflow-hidden">
+            <!-- ====== CENTER COLUMN (Cover Story) ====== -->
+            <!-- Mobile: Order 1 (Top) | Desktop: Order 2 (Middle) -->
+            <section class="order-1 lg:order-2 lg:col-span-6 bg-yellow-400 p-4 md:p-8 flex flex-col relative overflow-hidden">
                 <div class="absolute inset-0" style="background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
 
                 <div class="mag-box bg-white flex-grow relative p-6 md:p-10 flex flex-col items-center justify-center text-center shadow-[10px_10px_0_rgba(0,0,0,0.8)] border-4 border-black">
@@ -315,8 +316,9 @@
                 </div>
             </section>
 
-            <!-- RIGHT COLUMN — SPOTIFY WIDGET -->
-            <aside class="lg:col-span-3 bg-cyan-200 p-4 border-t-4 lg:border-t-0 lg:border-l-4 border-black flex flex-col gap-6">
+            <!-- ====== RIGHT COLUMN — SPOTIFY WIDGET ====== -->
+            <!-- Mobile: Order 3 (Bottom) | Desktop: Order 3 (Right) -->
+            <aside class="order-3 lg:order-3 lg:col-span-3 bg-cyan-200 p-4 border-t-4 lg:border-t-0 lg:border-l-4 border-black flex flex-col gap-6">
                 
                 <div class="mag-box bg-orange-400 p-1 relative overflow-hidden">
                     <div class="bg-gray-800 p-3 h-full border-2 border-gray-600 shadow-inner flex flex-col relative">
@@ -400,59 +402,57 @@
 
     <!-- ====================== JAVASCRIPT ====================== -->
 <script>
+    // Initialize Lucide Icons
     lucide.createIcons();
-async function updateSpotifyWidget() {
-    try {
-        const res = await fetch("https://portfoliowebsite-3od8.onrender.com/now-playing");
-        const data = await res.json();
 
-        console.log("API DATA:", data);
+    async function updateSpotifyWidget() {
+        try {
+            const res = await fetch("https://portfoliowebsite-3od8.onrender.com/now-playing");
+            const data = await res.json();
 
-        const text = document.getElementById("spotify-song-text");
-        const img = document.getElementById("spotify-album-art");
+            console.log("API DATA:", data);
 
-        console.log("TEXT ELEMENT:", text);
-        console.log("IMG ELEMENT:", img);
+            const text = document.getElementById("spotify-song-text");
+            const img = document.getElementById("spotify-album-art");
 
-        if (!text || !img) {
-            console.log("❌ WRONG ID — Widget elements not found in HTML.");
-            return;
+            if (!text || !img) {
+                console.log("❌ WRONG ID — Widget elements not found in HTML.");
+                return;
+            }
+
+            const screen = img.parentElement;
+
+            screen.querySelectorAll(".paused-badge").forEach(b => b.remove());
+            screen.classList.remove("paused-screen");
+
+            if (data.mode === "live") {
+                text.textContent = `${data.title} — ${data.artist}`;
+                img.src = data.album_art;
+            }
+            else if (data.mode === "history") {
+                text.textContent = `PAUSED — ${data.title} — ${data.artist}`;
+                img.src = data.album_art;
+
+                const badge = document.createElement("div");
+                badge.className = "paused-badge";
+                badge.textContent = "PAUSED";
+                screen.appendChild(badge);
+
+                screen.classList.add("paused-screen");
+            }
+            else {
+                text.textContent = "NO MUSIC PLAYING";
+                img.src = "https://placehold.co/300x300/1a1a1a/39FF14/png?text=NO+DISC";
+            }
+
+        } catch (err) {
+            console.log("Spotify Widget Error:", err);
         }
-
-        const screen = img.parentElement;
-
-        screen.querySelectorAll(".paused-badge").forEach(b => b.remove());
-        screen.classList.remove("paused-screen");
-
-        if (data.mode === "live") {
-            text.textContent = `${data.title} — ${data.artist}`;
-            img.src = data.album_art;
-        }
-        else if (data.mode === "history") {
-            text.textContent = `PAUSED — ${data.title} — ${data.artist}`;
-            img.src = data.album_art;
-
-            const badge = document.createElement("div");
-            badge.className = "paused-badge";
-            badge.textContent = "PAUSED";
-            screen.appendChild(badge);
-
-            screen.classList.add("paused-screen");
-        }
-        else {
-            text.textContent = "NO MUSIC PLAYING";
-            img.src = "https://placehold.co/300x300/1a1a1a/39FF14/png?text=NO+DISC";
-        }
-
-    } catch (err) {
-        console.log("Spotify Widget Error:", err);
     }
-}
 
-setInterval(updateSpotifyWidget, 5000);
-updateSpotifyWidget();
+    setInterval(updateSpotifyWidget, 5000);
+    updateSpotifyWidget();
 </script>
-
 
 </body>
 </html>
