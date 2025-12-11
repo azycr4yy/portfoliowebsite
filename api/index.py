@@ -15,10 +15,10 @@ app = FastAPI(
     version="2.4.0"
 )
 
-# CORS (Cross-Origin Resource Sharing) - Vital for frontend-backend communication
+# CORS (Cross-Origin Resource Sharing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific domain
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,29 +44,29 @@ async def health_check():
 
 @app.post("/api/contact")
 async def handle_contact(contact: ContactRequest):
-    """
-    Handle contact form submissions. 
-    TODO: Integrate SendGrid or SMTP here.
-    """
+    """Handle contact form submissions."""
     print(f"Incoming Transmission from {contact.email}: {contact.message}")
-    # Simulate processing time
     return {"message": "Handshake initiated. Message received in neural queue."}
 
-# --- Static File Serving ---
-# Mounts the 'public' directory to serve CSS/JS/Images if you separate them later
-# app.mount("/static", StaticFiles(directory="public/static"), name="static")
+# --- Page Routes ---
 
-# Serve the main Single Page Application (SPA)
 @app.get("/")
 async def read_index():
-    # Assumes your index.html is in a folder named 'public'
+    # Assumes index.html is in 'public' folder
     file_path = os.path.join("public", "index.html")
     if os.path.exists(file_path):
         return FileResponse(file_path)
     return JSONResponse(status_code=404, content={"error": "Index artifact not found."})
 
-# --- Entry Point ---
+@app.get("/about")
+async def read_about():
+    # Serves the new About Me page
+    file_path = os.path.join("public", "about.html")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    return JSONResponse(status_code=404, content={"error": "About page not found."})
+
+
 if __name__ == "__main__":
-    # Use PORT environment variable for deployment platforms (Railway/Render/Heroku)
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
