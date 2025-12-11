@@ -1,0 +1,9 @@
+flask
+flask-cors
+spotipy
+python-dotenv
+Flask
+Flask-Cors
+spotipy
+python-dotenv
+gunicorn
